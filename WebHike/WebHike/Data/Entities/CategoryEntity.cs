@@ -11,7 +11,7 @@ public class CategoryEntity
     [StringLength(250)]
     public string Name { get; set; } = null!;
     [StringLength(100)]
-    public string Image { get; set; } = string.Empty;
+    public string? Image { get; set; } = string.Empty;
     [StringLength(250)]
     public string Slug { get; set; } = null!;
     public bool IsDeleted { get; set; }
