@@ -1,6 +1,16 @@
+using Microsoft.EntityFrameworkCore;
+using WebHike.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+//DI - dependecy injection
+string strConn = builder.Configuration
+    .GetConnectionString("MyWebHikeConnection") ?? "";
+
+builder.Services.AddDbContext<HikeDbContext>(opt =>
+    opt.UseNpgsql(strConn));
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
