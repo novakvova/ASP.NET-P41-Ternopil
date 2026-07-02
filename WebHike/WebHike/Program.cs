@@ -15,6 +15,11 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
+var dirName = "images";
+var dirCurrent = Directory.GetCurrentDirectory();
+var path = Path.Combine(dirCurrent, "wwwroot", dirName);
+Directory.CreateDirectory(path); //автоматично стоврить images
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
