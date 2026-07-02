@@ -9,10 +9,12 @@ namespace WebHike.Models.Category;
 public class CategoryCreateViewModel
 {
     [Display(Name = "Назва категорії")]
+    [Required(ErrorMessage = "Вкажіть назву категорії")]
     public string Name { get; set; } = null!;
     [Display(Name = "Slug категорії")]
+    [Required(ErrorMessage = "Вкажіть slug категорії")]
     public string Slug { get; set; } = null!;
     [Display(Name = "Фото для категорії")]
     [DataType(DataType.Upload)]
-    public IFormFile Image { get; set; } = null!;
+    public IFormFile? Image { get; set; } = null!;
 }

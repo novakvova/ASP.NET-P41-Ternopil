@@ -34,22 +34,31 @@ public class MainController(HikeDbContext hikeDbContext)
     [HttpPost] //Цей метод спрацьовує коли кидає Post Request
     public IActionResult Create(CategoryCreateViewModel model)
     {
-        CategoryEntity categoryEntity = new CategoryEntity();
-        categoryEntity.Name = model.Name;
-        categoryEntity.Slug = model.Slug;
-        var dirName = "images";
-        var dirCurrent = Directory.GetCurrentDirectory();
-        string fileName = Guid.NewGuid().ToString() + ".jpg";
-        string fileSave = Path.Combine(dirCurrent, "wwwroot", dirName, fileName);
+        if (ModelState.IsValid)
+        {
+            CategoryEntity categoryEntity = new CategoryEntity();
+            categoryEntity.Name = model.Name;
+            categoryEntity.Slug = model.Slug;
+            categoryEntity.Image = "default.jpg";
+            if (model.Image != null)
+            {
+                var dirName = "images";
+                var dirCurrent = Directory.GetCurrentDirectory();
+                string fileName = Guid.NewGuid().ToString() + ".jpg";
+                string fileSave = Path.Combine(dirCurrent, "wwwroot", dirName, fileName);
 
-        using var stream = new FileStream(fileSave, FileMode.Create);
-        model.Image.CopyTo(stream); // Зберігаю передані байти у вказаний файл
+                using var stream = new FileStream(fileSave, FileMode.Create);
+                model.Image.CopyTo(stream); // Зберігаю передані байти у вказаний файл
 
-        categoryEntity.Image = fileName; //в БД зберігаю назву файла
+                categoryEntity.Image = fileName; //в БД зберігаю назву файла
+            }
 
-        hikeDbContext.Categories.Add(categoryEntity);
-        hikeDbContext.SaveChanges();
+            hikeDbContext.Categories.Add(categoryEntity);
+            hikeDbContext.SaveChanges();
 
-        return Redirect(nameof(Index)); //Повертаюся на список категорій
+            return Redirect(nameof(Index)); //Повертаюся на список категорій
+        }
+        
+        return View(model); // Що прийшло те іде назад
     }
 }
