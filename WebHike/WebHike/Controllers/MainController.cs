@@ -23,7 +23,7 @@ public class MainController(HikeDbContext hikeDbContext)
         //return "Привіт козаки :)";
         //так краще не робити :(
         var list = hikeDbContext.Categories.ToList();
-        return View(list);
+        return View(list); //Передаю дані на View - список категорій
     }
     //Метод для створення категорії нової
     [HttpGet] //Для відображення фоми
