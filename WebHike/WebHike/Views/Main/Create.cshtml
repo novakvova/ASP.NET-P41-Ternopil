@@ -32,4 +32,20 @@
 
 </div>
 
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/slugify@1.6.9/slugify.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const Name = document.getElementById("Name");
+            const Slug = document.getElementById("Slug");
+            Name.addEventListener("input", () => {
+                Slug.value = slugify(Name.value, {
+                    lower: true,
+                    strict: true,
+                    trim: true
+                });
+            });
+        });
+    </script>
+}
 
