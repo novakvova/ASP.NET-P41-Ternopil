@@ -2,11 +2,13 @@
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using WebHike.Data;
 using WebHike.Data.Entities;
+using WebHike.Interfaces;
 using WebHike.Models.Category;
 
 namespace WebHike.Controllers;
 
-public class MainController(HikeDbContext hikeDbContext) 
+public class MainController(HikeDbContext hikeDbContext,
+    IImageService imageService) 
     : Controller
 {
     //private readonly HikeDbContext _hikeDbContext;
@@ -32,7 +34,7 @@ public class MainController(HikeDbContext hikeDbContext)
         return View();
     }
     [HttpPost] //Цей метод спрацьовує коли кидає Post Request
-    public IActionResult Create(CategoryCreateViewModel model)
+    public async Task<IActionResult> Create(CategoryCreateViewModel model)
     {
         if (ModelState.IsValid)
         {
@@ -42,13 +44,11 @@ public class MainController(HikeDbContext hikeDbContext)
             categoryEntity.Image = "default.jpg";
             if (model.Image != null)
             {
-                var dirName = "images";
-                var dirCurrent = Directory.GetCurrentDirectory();
-                string fileName = Guid.NewGuid().ToString() + ".jpg";
-                string fileSave = Path.Combine(dirCurrent, "wwwroot", dirName, fileName);
-
-                using var stream = new FileStream(fileSave, FileMode.Create);
-                model.Image.CopyTo(stream); // Зберігаю передані байти у вказаний файл
+                string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+                // Фото стискається на сервері (ImageSharp): зменшується до
+                // розумного розміру та перекодовується у JPEG з компресією,
+                // тож 2 Мб з телефону не стають 2 Мб на сайті.
+                var fileName = await imageService.SaveOptimizedImageAsync(model.Image, folderPath);
 
                 categoryEntity.Image = fileName; //в БД зберігаю назву файла
             }

@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using WebHike.Data;
+using WebHike.Interfaces;
+using WebHike.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +12,8 @@ string strConn = builder.Configuration
 
 builder.Services.AddDbContext<HikeDbContext>(opt =>
     opt.UseNpgsql(strConn));
+
+builder.Services.AddScoped<IImageService, ImageOptimizationService>();
 
 builder.Services.AddControllersWithViews();
 
