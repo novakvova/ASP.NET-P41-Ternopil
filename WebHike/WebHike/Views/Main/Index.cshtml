@@ -7,6 +7,7 @@
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
     @foreach(var cat in Model)
     {
+        var modalId = $"confirmDelete{cat.Id}";
         <div class="col">
             <div class="card h-100 shadow-sm category-card border-0">
                 <img src="/images/@($"{cat.Image}_432.webp")"
@@ -14,7 +15,46 @@
                     alt="Чоловіче взуття">
                 <div class="card-body d-flex flex-column text-center">
                     <h5 class="card-title mb-4">@cat.Name</h5>
-                    <a href="#" class="btn btn-dark mt-auto w-100">Переглянути</a>
+
+                    <a href="#" class="btn btn-dark w-100 mb-2">
+                        Переглянути
+                    </a>
+
+                        <button type="button"
+                                data-bs-toggle="modal" data-bs-target="#@modalId"
+                                class="btn btn-danger w-100">
+                            Видалити
+                        </button>
+
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="@modalId" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="label_@cat.Id">Підтвердіть операцію</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            Ви дійсно бажаєте видалити категорію
+                            <strong>"@cat.Name"</strong>?
+                        </p>
+
+                        <p class="text-danger mb-0">
+                            Після видалення відновити її буде неможливо.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <form asp-action="Delete" asp-route-id="@cat.Id" method="post">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
+                            <button type="submit" class="btn btn-danger">Видалити</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

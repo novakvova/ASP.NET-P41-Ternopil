@@ -104,4 +104,50 @@ public class ImageOptimizationService(IConfiguration configuration,
 
         return resized ?? throw new InvalidOperationException("Не вдалося змінити розмір зображення");
     }
+
+    public Task RemoveImageAsync(string imageName, string folderPath)
+    {
+        if (string.IsNullOrWhiteSpace(imageName))
+            throw new ArgumentException("Ім'я зображення не може бути порожнім", nameof(imageName));
+
+        var sizes = configuration
+            .GetRequiredSection("ImageSizes")
+            .Get<List<int>>() ?? throw new InvalidOperationException("ImageSizes not found");
+
+        const string extension = ".webp";
+        var deletedCount = 0;
+
+        foreach (var size in sizes)
+        {
+            var filePath = Path.Combine(folderPath, $"{imageName}_{size}{extension}");
+
+            if (!File.Exists(filePath))
+            {
+                logger.LogWarning("Файл {FilePath} не знайдено", filePath);
+                continue;
+            }
+
+            try
+            {
+                File.Delete(filePath);
+                deletedCount++;
+            }
+            catch (IOException ex)
+            {
+                logger.LogError(ex, "Не вдалося видалити файл {FilePath}", filePath);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                logger.LogError(ex, "Немає доступу для видалення файлу {FilePath}", filePath);
+            }
+        }
+
+        logger.LogInformation(
+            "Видалено {DeletedCount} з {TotalCount} файлів для зображення {ImageName}",
+            deletedCount,
+            sizes.Count,
+            imageName);
+
+        return Task.CompletedTask;
+    }
 }
