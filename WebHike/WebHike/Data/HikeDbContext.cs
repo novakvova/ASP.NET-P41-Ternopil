@@ -10,4 +10,5 @@ public class HikeDbContext : DbContext
     {  }
 
     public DbSet<CategoryEntity> Categories { get; set; }
+    public DbSet<ProductEntity> Products { get; set; }
 }
