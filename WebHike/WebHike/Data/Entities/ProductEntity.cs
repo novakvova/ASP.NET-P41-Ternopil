@@ -20,4 +20,5 @@ public class ProductEntity
     public CategoryEntity Category { get; set; } = null!;
     public bool IsDeleted { get; set; }
     public DateTime DateCreated { get; set; } = DateTime.UtcNow;
+    public ICollection<ProductImageEntity> ProductImages { get; set; } = null!;
 }
