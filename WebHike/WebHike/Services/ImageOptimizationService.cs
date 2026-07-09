@@ -1,4 +1,5 @@
 ﻿using SkiaSharp;
+using System.Text.RegularExpressions;
 using WebHike.Interfaces;
 
 namespace WebHike.Services;
@@ -12,26 +13,12 @@ public class ImageOptimizationService(IConfiguration configuration,
     ILogger<ImageOptimizationService> logger) 
     : IImageService
 {
-    // Якість JPEG-стиснення (0-100). 80 — золота середина
-    // між якістю картинки та розміром файлу.
     private const int quality = 80;
-
 
     public async Task<string> SaveOptimizedImageAsync(IFormFile file, string folderPath)
     {
         if (file is null || file.Length == 0)
             throw new ArgumentException("Файл зображення порожній", nameof(file));
-
-        Directory.CreateDirectory(folderPath);
-
-        var sizes = configuration
-            .GetRequiredSection("ImageSizes")
-            .Get<List<int>>() ?? throw new InvalidOperationException("ImageSizes not found");
-
-        var imageName = Guid.NewGuid().ToString();
-        var extension = ".webp";
-
-        var originalSizeKb = file.Length / 1024;
 
         byte[] imageBytes;
 
@@ -41,6 +28,52 @@ public class ImageOptimizationService(IConfiguration configuration,
             await stream.CopyToAsync(ms);
             imageBytes = ms.ToArray();
         }
+
+        var originalSizeKb = file.Length / 1024;
+
+        return await SaveOptimizedImageAsync(imageBytes, folderPath, originalSizeKb);
+    }
+
+    public async Task<string> SaveOptimizedImageAsync(string base64Image, string folderPath)
+    {
+        if (string.IsNullOrWhiteSpace(base64Image))
+            throw new ArgumentException("Base64-рядок зображення порожній", nameof(base64Image));
+
+        var base64Data = base64Image.Split(',')[1];
+
+        byte[] imageBytes;
+
+        try
+        {
+            imageBytes = Convert.FromBase64String(base64Data);
+        }
+        catch (FormatException ex)
+        {
+            throw new ArgumentException("Некоректний base64-рядок зображення", nameof(base64Image), ex);
+        }
+
+        if (imageBytes.Length == 0)
+            throw new ArgumentException("Base64-рядок не містить даних зображення", nameof(base64Image));
+
+        var originalSizeKb = imageBytes.Length / 1024;
+
+        return await SaveOptimizedImageAsync(imageBytes, folderPath, originalSizeKb);
+    }
+
+    /// <summary>
+    /// Спільна внутрішня логіка збереження: приймає вже готовий байт-масив
+    /// зображення (незалежно від того, звідки він прийшов — IFormFile чи base64).
+    /// </summary>
+    private async Task<string> SaveOptimizedImageAsync(byte[] imageBytes, string folderPath, long originalSizeKb)
+    {
+        Directory.CreateDirectory(folderPath);
+
+        var sizes = configuration
+            .GetRequiredSection("ImageSizes")
+            .Get<List<int>>() ?? throw new InvalidOperationException("ImageSizes not found");
+
+        var imageName = Guid.NewGuid().ToString();
+        var extension = ".webp";
 
         var tasks = sizes.Select(size => SaveSizeAsync(
             imageBytes,
@@ -56,6 +89,7 @@ public class ImageOptimizationService(IConfiguration configuration,
 
         return imageName;
     }
+
 
     private async Task SaveSizeAsync(byte[] imageBytes, int maxWidth, string path)
     {
@@ -80,10 +114,6 @@ public class ImageOptimizationService(IConfiguration configuration,
         await data.AsStream().CopyToAsync(stream);
     }
 
-    /// <summary>
-    /// Аналог ResizeMode.Max з ImageSharp: зменшує зображення пропорційно,
-    /// щоб воно вміщалось у maxWidth x maxHeight, і не збільшує менші фото.
-    /// </summary>
     private static SKBitmap ResizeIfNeeded(SKBitmap source, int maxWidth, int maxHeight)
     {
         var width = source.Width;
@@ -91,7 +121,6 @@ public class ImageOptimizationService(IConfiguration configuration,
 
         var ratio = Math.Min((double)maxWidth / width, (double)maxHeight / height);
 
-        // Якщо фото вже менше за межі — залишаємо як є (без апскейлу)
         if (ratio >= 1.0)
             return source.Copy();
 

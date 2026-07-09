@@ -4,7 +4,7 @@
 
 <div class="row">
 
-    <form asp-action="Create" method ="post"
+    <form asp-action="ProdCreate" method="post" id="createProductForm"
         class="col-md-6 offset-md-3">
         <div class="mb-3">
             <label asp-for="Name" class="form-label"></label>
@@ -78,12 +78,11 @@
 
     <script>
         document.addEventListener('DOMContentLoaded',() => {
-            // console.log("Begin upload images");
 
             new Sortable(document.getElementById("imageList"),
             {
                 animation: 150,
-
+                onEnd: renumberBadges
             });
 
             const fileInput = document.getElementById("fileInput");
@@ -107,12 +106,79 @@
             
                     col.appendChild(wrapper);
                     imageList.appendChild(col);
+
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        wrapper.innerHTML = '';
+                        //console.log("Load file", e.target.result);
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.className = 'img-fluid rounded border w-100';
+                        img.style.height = '100px';
+                        img.style.objectFit = 'cover';
+                        img.alt = file.name;
+                        img.title = file.name;
+
+                        const badge = document.createElement('span');
+                        badge.className = 'badge bg-dark position-absolute bottom-0 start-0 m-1 priority-badge';
+
+                        const removeBtn = document.createElement('button');
+                        removeBtn.type = 'button';
+                        removeBtn.className = 'btn btn-sm btn-danger position-absolute top-0 end-0 m-1 rounded-circle';
+                        removeBtn.innerHTML = '&times;';
+                        removeBtn.setAttribute('aria-label', 'Видалити фото');
+                        removeBtn.addEventListener('click', () => {
+                            col.remove();
+                            renumberBadges();
+                        });
+
+                        wrapper.appendChild(img);
+                        wrapper.appendChild(badge);
+                        wrapper.appendChild(removeBtn);
+
+                        renumberBadges();
+                    }
+
+                    reader.readAsDataURL(file);
                 });
 
                 fileInput.value=""; //очищаємо значення, щоб можна було брати нові фото
             });
+            
+            function renumberBadges() {
+                imageList.querySelectorAll('.priority-badge').forEach((badge, index) => {
+                    badge.textContent = index + 1;
+                });
+            }
+        });
+    </script>
 
+    <script>
+        //Перехоплюю відправляння форми на сервер
+        document.addEventListener('DOMContentLoaded',() => {
+            const createProductForm = document.getElementById("createProductForm");
+            createProductForm.addEventListener("submit", (e)=>{
+                // e.preventDefault(); - пауза була для тесту і преверки js
+                // console.log("Working in form data");
+                //Якщо на формі були скриті поля із фото. Ми їх видаляємо.
+                createProductForm.querySelectorAll('input[name^="Images"]').forEach(el => el.remove());
+                
+                const imgs = imageList.querySelectorAll('img');
+                imgs.forEach((img,index) => {
+                    const hiddenName = document.createElement('input');
+                    hiddenName.type = 'hidden';
+                    hiddenName.name = `Images[${index}].Base64Image`;
+                    hiddenName.value = img.src; //код base64 самої фотки
+                    createProductForm.appendChild(hiddenName);
 
+                    const hiddenPriority = document.createElement('input');
+                    hiddenPriority.type = 'hidden';
+                    hiddenPriority.name = `Images[${index}].Priority`;
+                    hiddenPriority.value = index;
+                    createProductForm.appendChild(hiddenPriority);
+                });
+
+            });
         });
     </script>
 
