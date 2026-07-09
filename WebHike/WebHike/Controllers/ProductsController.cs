@@ -10,7 +10,7 @@ public class ProductsController(HikeDbContext hikeDbContext) : Controller
         return View();
     }
     [HttpGet]
-    public IActionResult Create()
+    public IActionResult ProdCreate()
     {
         //отримую із БД назва категорій
         //Кладу у спеціальну динамічну колекцію, яка буде доступна на View
