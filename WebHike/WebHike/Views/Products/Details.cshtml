@@ -9,7 +9,7 @@
 {
     <div class="text-center my-5">
         <h2>Товар не знайдено</h2>
-        <a asp-action="ProdList" class="btn btn-dark mt-3">Повернутися до списку</a>
+        <a asp-action="Index" class="btn btn-dark mt-3">Повернутися до списку</a>
     </div>
 }
 else
@@ -88,7 +88,7 @@ else
 
                 <div class="mb-4">
                     <p class="lead" style="white-space: pre-line;">
-                        @Model.Description
+                        @Html.Raw(Model.Description)
                     </p>
                 </div>
 
