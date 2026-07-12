@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebHike.Data;
 using WebHike.Data.Entities;
 using WebHike.Interfaces;
@@ -11,7 +12,20 @@ public class ProductsController(HikeDbContext hikeDbContext,
 {
     public IActionResult Index()
     {
-        return View();
+        List<ProductItemViewModel> model = hikeDbContext.Products.
+            Select(x => new ProductItemViewModel
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Price = x.Price.ToString(),
+                CategoryName = x.Category.Name,
+                Images = x.ProductImages
+                    .OrderBy(x=>x.Order)
+                    .Select(x=>x.Name)
+                    .Take(2)
+                    .ToList()
+            }).ToList();
+        return View(model);
     }
     [HttpGet]
     public IActionResult ProdCreate()
