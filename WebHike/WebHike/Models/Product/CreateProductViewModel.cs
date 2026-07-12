@@ -12,6 +12,7 @@ public class CreateProductViewModel
     public string? Description { get; set; } = String.Empty;
     [Required(ErrorMessage = "Вкажіть ціну")]
     [Display(Name = "Ціна продукта")]
+    [DataType(DataType.Currency)]
     public string Price { get; set; } = null!;
     [Required(ErrorMessage = "Вкажіть Slug")]
     [Display(Name = "Slug")]

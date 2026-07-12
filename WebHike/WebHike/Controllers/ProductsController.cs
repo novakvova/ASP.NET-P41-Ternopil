@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using WebHike.Data;
 using WebHike.Data.Entities;
 using WebHike.Interfaces;
@@ -17,7 +18,7 @@ public class ProductsController(HikeDbContext hikeDbContext,
             {
                 Id = x.Id,
                 Name = x.Name,
-                Price = x.Price.ToString(),
+                Price = x.Price.ToString("C", new CultureInfo("uk-UA")),
                 CategoryName = x.Category.Name,
                 Images = x.ProductImages
                     .OrderBy(x=>x.Order)
@@ -45,12 +46,14 @@ public class ProductsController(HikeDbContext hikeDbContext,
         if (ModelState.IsValid)
         {
             var cat = hikeDbContext.Categories.SingleOrDefault(x => x.Name == model.CategoryName);
+            string priceStr = model.Price.ToString().Trim().Replace(".",",");
+            decimal price = Decimal.Parse(priceStr, new CultureInfo("uk-UA"));
             var entity = new ProductEntity
             {
                 Name = model.Name,
                 CategoryId = cat.Id,
                 Description = model.Description,
-                Price = 0.0M,
+                Price = price,
                 Slug = model.Slug
             };
             string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
