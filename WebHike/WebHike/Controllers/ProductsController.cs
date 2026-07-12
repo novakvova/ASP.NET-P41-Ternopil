@@ -28,6 +28,7 @@ public class ProductsController(HikeDbContext hikeDbContext,
             }).ToList();
         return View(model);
     }
+    
     [HttpGet]
     public IActionResult ProdCreate()
     {
@@ -74,6 +75,25 @@ public class ProductsController(HikeDbContext hikeDbContext,
         }
         ViewBag.Categories = hikeDbContext
             .Categories.Select(x => x.Name).ToList();
+        return View(model);
+    }
+
+    public IActionResult Details(int id)
+    {
+        ProductDetailViewModel? model = hikeDbContext.Products.
+           Select(x => new ProductDetailViewModel
+           {
+               Id = x.Id,
+               Name = x.Name,
+               Price = x.Price.ToString("C", new CultureInfo("uk-UA")),
+               CategoryName = x.Category.Name,
+               Description = x.Description ?? String.Empty,
+               Images = x.ProductImages
+                   .OrderBy(x => x.Order)
+                   .Select(x => x.Name)
+                   .ToList()
+           })
+           .SingleOrDefault(x=>x.Id==id);
         return View(model);
     }
 }

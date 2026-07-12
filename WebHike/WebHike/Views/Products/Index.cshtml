@@ -1,4 +1,4 @@
-﻿@model List<WebHike.Models.Product.ProductItemViewModel>
+﻿@model List<ProductItemViewModel>
 
 <h1 class="text-center mb-5 fw-bold">Список товарів Nike</h1>
 
@@ -30,7 +30,7 @@
                     <h3 class="price mt-3">@prod.Price</h3>
 
                     <div class="card-footer bg-white border-0">
-                        <a href="#" class="btn btn-dark w-100">
+                        <a asp-action="Details" asp-route-id="@prod.Id" class="btn btn-dark w-100 stretched-link">
                             Переглянути
                         </a>
                     </div>
