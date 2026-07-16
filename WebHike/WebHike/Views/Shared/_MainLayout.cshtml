@@ -51,7 +51,8 @@
                             </svg>
                         </button>
                     </form>
-                    <a href="#" class="btn btn-dark rounded-pill px-4">
+                    <a asp-action="Login" asp-controller="Account" 
+                       class="btn btn-dark rounded-pill px-4">
                         Увійти
                     </a>
                 </div>
@@ -63,6 +64,7 @@
         @RenderBody()
     </main>
 
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="/lib/bootstrap/dist/js/bootstrap.min.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
