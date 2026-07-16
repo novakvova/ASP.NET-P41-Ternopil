@@ -51,10 +51,23 @@
                             </svg>
                         </button>
                     </form>
-                    <a asp-action="Login" asp-controller="Account" 
-                       class="btn btn-dark rounded-pill px-4">
-                        Увійти
-                    </a>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        @using (Html.BeginForm("Logout", "Account", FormMethod.Post))
+                        {
+                            <button class="btn btn-dark rounded-pill px-4">
+                                @User.Identity.Name
+                                Вихід
+                            </button>
+                        }
+                    }
+                    else
+                    {
+                        <a asp-action="Login" asp-controller="Account" 
+                           class="btn btn-dark rounded-pill px-4">
+                            Увійти
+                        </a>
+                    }
                 </div>
             </div>
         </nav>
