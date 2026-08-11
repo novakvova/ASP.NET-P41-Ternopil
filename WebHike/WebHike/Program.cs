@@ -61,10 +61,23 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Main}/{action=Index}/{id?}")
-    .WithStaticAssets();
+//app.MapControllerRoute(
+//    name: "default",
+//    pattern: "{controller=Main}/{action=Index}/{id?}")
+//    .WithStaticAssets();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapAreaControllerRoute(
+      name: "admin_area",
+      areaName: "Admin",
+      pattern: "admin/{controller=Home}/{action=Index}/{id?}"
+    );
+    endpoints.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Main}/{action=Index}/{id?}"
+    );
+});
 
 
 //Перед запуском додам в БД ролі користувачів, якщо їх там немає
