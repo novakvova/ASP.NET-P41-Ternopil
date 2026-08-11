@@ -61,6 +61,14 @@
       </ul>
     </li>
 
+        <!-- Products -->
+        <li class='menu-item@(currentPage.StartsWith("/admin/Products") ? " active open" : "")'>
+            <a asp-controller="Products" asp-action="Index" class="menu-link">
+                <i class="menu-icon icon-base ri ri-bank-card-2-line"></i>
+                <div>Продукти</div>
+            </a>
+        </li>
+
     <!-- Layouts -->
     <li class='menu-item@(currentPage.StartsWith("/admin/LayoutExamples") ? " active open" : "")'>
       <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -137,6 +145,7 @@
     <li class="menu-header mt-7">
       <span class="menu-header-text">Apps &amp; Pages</span>
     </li>
+
     <!-- Apps -->
     <li class='menu-item@(currentPage == "/admin/Apps/Email" ? " active" : "")'>
       <a href="https://demos.themeselection.com/materio-aspnet-core-mvc-admin-template/html/vertical-menu-template/app-email.html" target="_blank" class="menu-link">
@@ -145,6 +154,7 @@
         <div class="badge rounded-pill bg-label-primary fs-tiny ms-auto">Pro</div>
       </a>
     </li>
+
     <li class='menu-item@(currentPage == "/admin/Apps/Chat" ? " active" : "")'>
       <a href="https://demos.themeselection.com/materio-aspnet-core-mvc-admin-template/html/vertical-menu-template/app-chat.html" target="_blank" class="menu-link">
         <i class="menu-icon icon-base ri ri-wechat-line"></i>
@@ -152,6 +162,7 @@
         <div class="badge rounded-pill bg-label-primary fs-tiny ms-auto">Pro</div>
       </a>
     </li>
+
     <li class='menu-item@(currentPage == "/admin/Apps/Calendar" ? " active" : "")'>
       <a href="https://demos.themeselection.com/materio-aspnet-core-mvc-admin-template/html/vertical-menu-template/app-calendar.html" target="_blank" class="menu-link">
         <i class="menu-icon icon-base ri ri-calendar-line"></i>
@@ -159,6 +170,7 @@
         <div class="badge rounded-pill bg-label-primary fs-tiny ms-auto">Pro</div>
       </a>
     </li>
+    
     <li class='menu-item@(currentPage == "/admin/Apps/Kanban" ? " active" : "")'>
       <a href="https://demos.themeselection.com/materio-aspnet-core-mvc-admin-template/html/vertical-menu-template/app-kanban.html" target="_blank" class="menu-link">
         <i class="menu-icon icon-base ri ri-drag-drop-line"></i>
@@ -166,6 +178,7 @@
         <div class="badge rounded-pill bg-label-primary fs-tiny ms-auto">Pro</div>
       </a>
     </li>
+
     <li class='menu-item@(currentPage.StartsWith("/admin/Pages") ? " active open" : "")'>
       <a href="javascript:void(0);" class="menu-link menu-toggle">
         <i class="menu-icon icon-base ri ri-layout-left-line"></i>
@@ -189,6 +202,7 @@
         </li>
       </ul>
     </li>
+
     <li class='menu-item@(currentPage.StartsWith("/admin/Auth") ? " active open" : "")'>
       <a href="javascript:void(0);" class="menu-link menu-toggle">
         <i class="menu-icon icon-base ri ri-shield-keyhole-line"></i>
@@ -212,6 +226,7 @@
         </li>
       </ul>
     </li>
+    
     <li class='menu-item@(currentPage.StartsWith("/admin/Pages/Misc") ? " active open" : "")'>
       <a href="javascript:void(0);" class="menu-link menu-toggle">
         <i class="menu-icon icon-base ri ri-box-3-line"></i>
