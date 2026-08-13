@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using WebHike.Constants;
 using WebHike.Data;
 using WebHike.Data.Entities.Identity;
@@ -49,6 +50,16 @@ var dirName = "images";
 var dirCurrent = Directory.GetCurrentDirectory();
 var path = Path.Combine(dirCurrent, "wwwroot", dirName);
 Directory.CreateDirectory(path); //автоматично стоврить images
+
+var myImage = "myimages";
+path = Path.Combine(dirCurrent, myImage);
+Directory.CreateDirectory(path); //автоматично стоврить images
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(path),
+    RequestPath = $"/{myImage}"
+});
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

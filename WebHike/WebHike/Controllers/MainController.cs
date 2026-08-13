@@ -42,19 +42,28 @@ public class MainController(HikeDbContext hikeDbContext,
             categoryEntity.Name = model.Name;
             categoryEntity.Slug = model.Slug;
             categoryEntity.Image = "default.jpg";
-            if (model.Image != null)
+            try
             {
-                string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
-                // Фото стискається на сервері (ImageSharp): зменшується до
-                // розумного розміру та перекодовується у JPEG з компресією,
-                // тож 2 Мб з телефону не стають 2 Мб на сайті.
-                var fileName = await imageService.SaveOptimizedImageAsync(model.Image, folderPath);
+                if (model.Image != null)
+                {
+                    //throw new Exception("Проблема=====");
+                    string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "myimages");
+                    // Фото стискається на сервері (ImageSharp): зменшується до
+                    // розумного розміру та перекодовується у JPEG з компресією,
+                    // тож 2 Мб з телефону не стають 2 Мб на сайті.
+                    var fileName = await imageService.SaveOptimizedImageAsync(model.Image, folderPath);
 
-                categoryEntity.Image = fileName; //в БД зберігаю назву файла
+                    categoryEntity.Image = fileName; //в БД зберігаю назву файла
+                }
+
+                hikeDbContext.Categories.Add(categoryEntity);
+                hikeDbContext.SaveChanges();
             }
-
-            hikeDbContext.Categories.Add(categoryEntity);
-            hikeDbContext.SaveChanges();
+            catch(Exception ex)
+            {
+                ModelState.AddModelError(String.Empty, "Сталася халупа "+ex.Message);
+                return View(model); // Що прийшло те іде назад
+            }
 
             return Redirect(nameof(Index)); //Повертаюся на список категорій
         }
