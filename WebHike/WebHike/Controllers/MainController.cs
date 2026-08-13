@@ -62,19 +62,19 @@ public class MainController(HikeDbContext hikeDbContext,
         return View(model); // Що прийшло те іде назад
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Delete(int id) 
-    {
-        var cat = hikeDbContext.Categories.SingleOrDefault(x => x.Id == id);
-        if(cat == null)
-            return NotFound();
+    //[HttpPost]
+    //public async Task<IActionResult> Delete(int id) 
+    //{
+    //    var cat = hikeDbContext.Categories.SingleOrDefault(x => x.Id == id);
+    //    if(cat == null)
+    //        return NotFound();
 
-        string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
-        await imageService.RemoveImageAsync(cat.Image, folderPath);
+    //    string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+    //    await imageService.RemoveImageAsync(cat.Image, folderPath);
 
-        hikeDbContext.Categories.Remove(cat);
-        await hikeDbContext.SaveChangesAsync();
+    //    hikeDbContext.Categories.Remove(cat);
+    //    await hikeDbContext.SaveChangesAsync();
 
-        return RedirectToAction(nameof(Index));
-    }
+    //    return RedirectToAction(nameof(Index));
+    //}
 }
