@@ -51,15 +51,22 @@ var dirCurrent = Directory.GetCurrentDirectory();
 var path = Path.Combine(dirCurrent, "wwwroot", dirName);
 Directory.CreateDirectory(path); //автоматично стоврить images
 
-var myImage = "myimages";
-path = Path.Combine(dirCurrent, myImage);
-Directory.CreateDirectory(path); //автоматично стоврить images
-
-app.UseStaticFiles(new StaticFileOptions
+try
 {
-    FileProvider = new PhysicalFileProvider(path),
-    RequestPath = $"/{myImage}"
-});
+    var myImage = "myimages";
+    path = Path.Combine(dirCurrent, myImage);
+    Directory.CreateDirectory(path); //автоматично стоврить images
+
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(path),
+        RequestPath = $"/{myImage}"
+    });
+}
+catch(Exception ex)
+{
+    Console.WriteLine("Помилка запуску" + ex.Message);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
