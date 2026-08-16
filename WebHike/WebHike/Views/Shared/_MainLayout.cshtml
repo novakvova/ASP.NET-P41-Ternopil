@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using WebHike.Constants
+<!DOCTYPE html>
 <html>
 <head>
     <title>Nike store</title>
@@ -35,9 +36,14 @@
                         <li class="nav-item">
                             <a class="nav-link active" asp-action="Index" asp-controller="Products">Товари</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-                        </li>
+                        @if(User.IsInRole(Roles.Admin))
+                         {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="Admin" 
+                                    asp-controller="Home" asp-action="Index">Адмін панель</a>
+                            </li>  
+                         }
+
                     </ul>
 
                     <a asp-controller="Cart" asp-action="Index" class="position-relative text-white text-decoration-none me-3 d-flex align-items-center">

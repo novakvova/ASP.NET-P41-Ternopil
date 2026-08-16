@@ -1,4 +1,4 @@
-﻿@model List<WebHike.Data.Entities.CategoryEntity>
+﻿@model List<CategoryItemViewModel>
 
 <h1 class="text-center">Категорії товарів</h1>
 
@@ -10,7 +10,7 @@
         var modalId = $"confirmDelete{cat.Id}";
         <div class="col">
             <div class="card h-100 shadow-sm category-card border-0">
-                <img src="/myimages/@($"{cat.Image}_432.webp")"
+                <img src="@cat.Image"
                     class="card-img-top category-img" 
                     alt="Чоловіче взуття">
                 <div class="card-body d-flex flex-column text-center">

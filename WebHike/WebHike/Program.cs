@@ -46,15 +46,15 @@ var app = builder.Build();
 
 app.UseSession();
 
-var dirName = "images";
-var dirCurrent = Directory.GetCurrentDirectory();
-var path = Path.Combine(dirCurrent, "wwwroot", dirName);
-Directory.CreateDirectory(path); //автоматично стоврить images
+//var dirName = "images";
+//var dirCurrent = Directory.GetCurrentDirectory();
+//var path = Path.Combine(dirCurrent, "wwwroot", dirName);
+//Directory.CreateDirectory(path); //автоматично стоврить images
 
 try
 {
-    var myImage = "myimages";
-    path = Path.Combine(dirCurrent, myImage);
+    var myImage = builder.Configuration.GetRequiredSection("ImagesDir").Get<string>() ?? "myimages";
+    string path = Path.Combine(Directory.GetCurrentDirectory(), myImage);
     Directory.CreateDirectory(path); //автоматично стоврить images
 
     app.UseStaticFiles(new StaticFileOptions
@@ -104,6 +104,11 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     var roleManager = services.GetRequiredService<RoleManager<RoleEntity>>();
     var userManager = services.GetRequiredService<UserManager<UserEntity>>();
+    var dbContext = services.GetRequiredService<HikeDbContext>();
+
+    //Коли запускається проект він перевіряє БД, якщо БД пуста то він автоматично робить БД 
+    //на основі міграцій, які є у проекті
+    await dbContext.Database.MigrateAsync();
 
     if (!roleManager.Roles.Any())
     {

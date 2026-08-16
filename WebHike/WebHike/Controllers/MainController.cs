@@ -8,6 +8,7 @@ using WebHike.Models.Category;
 namespace WebHike.Controllers;
 
 public class MainController(HikeDbContext hikeDbContext,
+    IConfiguration configuration,
     IImageService imageService) 
     : Controller
 {
@@ -19,12 +20,24 @@ public class MainController(HikeDbContext hikeDbContext,
     //Методи у ASP.NET - звуться Action - дія
     public IActionResult Index()
     {
-        //Контролер дані передає на певну View
-        //View - це звичайна html сторінка із
-        //кодом C# - Razor View
-        //return "Привіт козаки :)";
-        //так краще не робити :(
-        var list = hikeDbContext.Categories.ToList();
+        ///Контролер дані передає на певну View
+        ///View - це звичайна html сторінка із
+        ///кодом C# - Razor View
+        ///return "Привіт козаки :)";
+        ///так краще не робити :(
+
+        string path = configuration.GetRequiredSection("ImagesDir").Get<string>() ?? "myimages";
+        var sizes = configuration.GetRequiredSection("ImageSizes").Get<List<int>>() ?? 
+            throw new InvalidOperationException("ImageSizes not found");
+        var list = hikeDbContext.Categories
+            .Select(x=>new CategoryItemViewModel
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Image = $"/{path}/{x.Image}_{sizes[1]}.webp"
+            })
+            
+            .ToList();
         return View(list); //Передаю дані на View - список категорій
     }
     //Метод для створення категорії нової
@@ -45,14 +58,8 @@ public class MainController(HikeDbContext hikeDbContext,
             try
             {
                 if (model.Image != null)
-                {
-                    //throw new Exception("Проблема=====");
-                    string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "myimages");
-                    // Фото стискається на сервері (ImageSharp): зменшується до
-                    // розумного розміру та перекодовується у JPEG з компресією,
-                    // тож 2 Мб з телефону не стають 2 Мб на сайті.
-                    var fileName = await imageService.SaveOptimizedImageAsync(model.Image, folderPath);
-
+                {                    
+                    var fileName = await imageService.SaveOptimizedImageAsync(model.Image);
                     categoryEntity.Image = fileName; //в БД зберігаю назву файла
                 }
 
