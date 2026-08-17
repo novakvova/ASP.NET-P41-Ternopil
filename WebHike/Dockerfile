@@ -14,6 +14,14 @@ RUN dotnet publish -c Release -o /app
 # Stage 2: Final image for runtime
 FROM mcr.microsoft.com/dotnet/aspnet:9.0
 
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        libfontconfig1 \
+        libfreetype6 \
+        libpng16-16 \
+        libjpeg62-turbo \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 # Копіюємо додаток з етапу побудови
