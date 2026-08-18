@@ -1,0 +1,37 @@
+version: "3.9"
+
+networks:
+  webhikeNet:
+    driver: bridge
+
+services:
+  postgresServerDb:
+    image: postgres:18.1
+    container_name: postgres_db
+    restart: always
+    ports:
+      - "5021:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ${VOLUME_POSTGRES}
+    networks:
+      - webhikeNet
+    
+  api:
+    #build: ./WebApiTransfer
+    image: novakvova/webhike-mvc:latest
+    container_name: webhike_mvc
+    volumes:
+      - ${VOLUME_SERVERAPI}
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__MyWebHikeConnection: Host=postgresServerDb;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+    ports:
+      - "8096:8080"
+    depends_on:
+      - postgresServerDb
+    networks:
+      - webhikeNet
