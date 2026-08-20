@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 using System.Text.Json;
 using WebQRCode.Constants;
 using WebQRCode.Data;
@@ -34,7 +35,7 @@ public static class DbSeeder
             var jsonFile = Path.Combine(curDir, "Helpers", "JsonData", "Users.json");
             if (File.Exists(jsonFile))
             {
-                var jsonData = await File.ReadAllTextAsync(jsonFile);
+                var jsonData = await File.ReadAllTextAsync(jsonFile, encoding: Encoding.UTF8);
                 try
                 {
                     var users = JsonSerializer.Deserialize<List<SeederUserModel>>(jsonData);
