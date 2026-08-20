@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using WebQRCode.Constants;
 using WebQRCode.Data;
 using WebQRCode.Data.Entities.Identity;
 
@@ -16,5 +17,13 @@ public static class DbSeeder
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserEntity>>();
 
         context.Database.Migrate();
+
+        if (!context.Roles.Any())
+        {
+            foreach (var roleName in Roles.ListRoles())
+            {
+                await roleManager.CreateAsync(new RoleEntity { Name = roleName });
+            }
+        }
     }
 }
