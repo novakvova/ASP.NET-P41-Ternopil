@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 using WebQRCode.Constants;
 using WebQRCode.Data;
 using WebQRCode.Data.Entities.Identity;
+using WebQRCode.Models.Seeder;
 
 namespace WebQRCode.Extensions;
 
@@ -23,6 +25,44 @@ public static class DbSeeder
             foreach (var roleName in Roles.ListRoles())
             {
                 await roleManager.CreateAsync(new RoleEntity { Name = roleName });
+            }
+        }
+
+        if(!context.Users.Any())
+        {
+            var curDir = Directory.GetCurrentDirectory();
+            var jsonFile = Path.Combine(curDir, "Helpers", "JsonData", "Users.json");
+            if (File.Exists(jsonFile))
+            {
+                var jsonData = await File.ReadAllTextAsync(jsonFile);
+                try
+                {
+                    var users = JsonSerializer.Deserialize<List<SeederUserModel>>(jsonData);
+                    foreach(var user in users)
+                    {
+                        var entity = new UserEntity
+                        {
+                            FirstName = user.FirstName,
+                            LastName = user.LastName,
+                            Email = user.Email,
+                            UserName = user.Email,
+                            Image = user.Image,
+                        };
+                        var result = await userManager.CreateAsync(entity, user.Password);
+                        if(result.Succeeded)
+                        {
+                            foreach(var role in user.Roles)
+                            {
+                                await userManager.AddToRoleAsync(entity, role);
+                            }
+                            
+                        }
+                    }
+                } 
+                catch(Exception ex)
+                {
+                    Console.WriteLine("Викникла помилка при Seed Users ", ex.Message);
+                }
             }
         }
     }

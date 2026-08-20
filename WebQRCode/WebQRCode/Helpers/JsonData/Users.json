@@ -4,13 +4,15 @@
     "FirstName": "Адмін",
     "LastName": "Системний",
     "Image": "default.jpg",
-    "Roles": [ "admin" ]
+    "Roles": [ "admin" ],
+    "Password": "Admin123!"
   },
   {
     "Email": "user@gmail.com",
     "FirstName": "Іван",
     "LastName": "Зібров",
     "Image": "default.jpg",
-    "Roles": [ "user" ]
+    "Roles": [ "user" ],
+    "Password": "User123!"
   }
 ]
