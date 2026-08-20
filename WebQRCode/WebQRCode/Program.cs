@@ -1,6 +1,12 @@
+using Microsoft.EntityFrameworkCore;
+using WebQRCode.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddDbContext<QRCodeDbContext>(opt =>
+    opt.UseNpgsql(builder.Configuration.GetConnectionString("MyQRCodeConnection")));
+
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
