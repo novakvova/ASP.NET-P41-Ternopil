@@ -27,7 +27,20 @@ builder.Services.AddControllers();
 //builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen(); //Кажемо, що у нас є swagger
 
+const string reactCorsPolicy = "ReactClient";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(reactCorsPolicy, policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
+
+app.UseCors(reactCorsPolicy);
 
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
