@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using WebQRCode.Data;
 using WebQRCode.Data.Entities.Identity;
 using WebQRCode.Extensions;
+using WebQRCode.Interfaces;
+using WebQRCode.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +23,8 @@ builder.Services.AddIdentity<UserEntity, RoleEntity>(options =>
 })
     .AddEntityFrameworkStores<QRCodeDbContext>()
     .AddDefaultTokenProviders();
+
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
