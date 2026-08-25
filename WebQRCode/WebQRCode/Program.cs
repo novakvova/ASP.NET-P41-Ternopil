@@ -1,10 +1,15 @@
+using FluentValidation;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebQRCode.Data;
 using WebQRCode.Data.Entities.Identity;
 using WebQRCode.Extensions;
+using WebQRCode.Filters;
 using WebQRCode.Interfaces;
 using WebQRCode.Services;
+using WebQRCode.Validators.Account;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +45,26 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
+});
+
+// FluentValidation
+builder.Services.AddValidatorsFromAssemblyContaining<LoginModelValidator>();
+
+// MVC Filter and Options
+builder.Services.Configure<MvcOptions>(options =>
+{
+    options.Filters.Add<ValidationFilter>();
+});
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+});
+
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = long.MaxValue;
+    options.MultipartHeadersLengthLimit = int.MaxValue;
 });
 
 var app = builder.Build();

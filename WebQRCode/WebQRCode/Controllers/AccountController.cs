@@ -12,6 +12,8 @@ public class AccountController(IJwtTokenService jwtTokenService,
     UserManager<UserEntity> userManager) : ControllerBase
 {
     [HttpPost]
+    //Перед виконанням котроллера ми можемо автомати валідувати дані
+    //Виконує спеціальний фільтер, який ми зареєструємо.
     public async Task<IActionResult> Login([FromBody] LoginModel model)
     {
         var user = await userManager.FindByEmailAsync(model.Email);
