@@ -1,4 +1,4 @@
-import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import type { AxiosError } from "axios";
 import { UseRegisterMutation } from "./hooks/useRegisterMutation.ts";
 import type {IRegister_Data} from "./types/IRegister.ts";
@@ -28,8 +28,8 @@ const Register = () => {
     // const [email, setEmail] = useState("");
     // const [password, setPassword] = useState("");
     // const [confirmPassword, setConfirmPassword] = useState("");
-    const [imageFile, setImageFile] = useState<File | null>(null);
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    // const [imageFile, setImageFile] = useState<File | null>(null);
+    // const [imagePreview, setImagePreview] = useState<string | null>(null);
 
     const [fieldErrors, setFieldErrors] = useState<Record<string, string[]> | null>(null);
     const [generalError, setGeneralError] = useState<string | null>(null);
@@ -45,8 +45,9 @@ const Register = () => {
 
     const onImageChange = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0] ?? null;
-        setImageFile(file);
-        setImagePreview(file ? URL.createObjectURL(file) : null);
+        // setImageFile(file);
+        setForm({...form, imageFile: file});
+        // setImagePreview(file ? URL.createObjectURL(file) : null);
     };
 
     const fieldError = (name: string) => fieldErrors?.[name]?.[0];
@@ -58,7 +59,7 @@ const Register = () => {
 
         try {
             await mutateAsync({
-                data: { ...form, imageFile },
+                data: form,
             });
         } catch (err) {
             const axiosError = err as AxiosError<IApiErrorResponse>;
@@ -80,8 +81,8 @@ const Register = () => {
                 <form className="space-y-4" onSubmit={onSubmit} noValidate>
                     <div className="flex items-center gap-4">
                         <div className="w-16 h-16 rounded-full bg-gray-100 border border-gray-200 overflow-hidden flex items-center justify-center shrink-0">
-                            {imagePreview ? (
-                                <img src={imagePreview} alt="Прев'ю фото" className="w-full h-full object-cover" />
+                            {form.imageFile ? (
+                                <img src={URL.createObjectURL(form.imageFile)} alt="Прев'ю фото" className="w-full h-full object-cover" />
                             ) : (
                                 <span className="text-xs text-gray-400">Фото</span>
                             )}
