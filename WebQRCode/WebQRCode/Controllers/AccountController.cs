@@ -10,6 +10,7 @@ namespace WebQRCode.Controllers;
 [Route("api/[controller]/[action]")]
 [ApiController]
 public class AccountController(IJwtTokenService jwtTokenService,
+    IImageService imageService,
     UserManager<UserEntity> userManager) : ControllerBase
 {
     [HttpPost]
@@ -42,6 +43,10 @@ public class AccountController(IJwtTokenService jwtTokenService,
                 LastName = model.LastName,
                 FirstName = model.FirstName
             };
+            if(model.ImageFile != null)
+            {
+                user.Image = await imageService.SaveOptimizedImageAsync(model.ImageFile);
+            }
             var result = await userManager.CreateAsync(user, model.Password);
             if(!result.Succeeded)
             {

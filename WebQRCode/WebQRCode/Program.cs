@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using WebQRCode.Data;
 using WebQRCode.Data.Entities.Identity;
 using WebQRCode.Extensions;
@@ -30,6 +31,7 @@ builder.Services.AddIdentity<UserEntity, RoleEntity>(options =>
     .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+builder.Services.AddScoped<IImageService, ImageOptimizationService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -70,6 +72,23 @@ builder.Services.Configure<FormOptions>(options =>
 var app = builder.Build();
 
 app.UseCors(reactCorsPolicy);
+
+try
+{
+    var myImage = builder.Configuration.GetRequiredSection("ImagesDir").Get<string>() ?? "myimages";
+    string path = Path.Combine(Directory.GetCurrentDirectory(), myImage);
+    Directory.CreateDirectory(path); //автоматично стоврить images
+
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(path),
+        RequestPath = $"/{myImage}"
+    });
+}
+catch (Exception ex)
+{
+    Console.WriteLine("Помилка запуску" + ex.Message);
+}
 
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
