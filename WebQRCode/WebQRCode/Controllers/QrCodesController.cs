@@ -75,4 +75,24 @@ public class QrCodesController(QRCodeDbContext qrDbContext,
 
         return Ok();
     }
+
+    [HttpGet("view/{code}")]
+    [AllowAnonymous] // Це адреса буде розблокована
+    public async Task<IActionResult> RedirectToTarget(string code)
+    {
+        var qrCode = await qrDbContext.QrCodes
+            .FirstOrDefaultAsync(x => x.Code == code);
+
+        if (qrCode == null)
+            return NotFound("QR Code не знайдено");
+
+        if (!qrCode.IsActive)
+            return BadRequest("QR Code деактивований");
+
+        qrCode.ScanCount++;
+
+        await qrDbContext.SaveChangesAsync();
+
+        return Redirect(qrCode.TargetUrl);
+    }
 }
