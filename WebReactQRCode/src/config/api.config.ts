@@ -5,6 +5,7 @@ export const getUsersUrl = () => '/users';
 export const postLoginUrl = () => '/account/login';
 export const postRegisterUrl = () => '/Account/Register';
 export const getProfileUrl = () => '/Account/Profile';
+export const getQrCodesUrl = () => '/QrCodes';
 
 export const getImageUrl = (
     image?: string | null,
