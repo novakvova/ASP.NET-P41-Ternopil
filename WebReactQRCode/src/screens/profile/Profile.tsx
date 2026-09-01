@@ -1,11 +1,12 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router";
+import {Link, useNavigate} from "react-router";
 import { useAuth } from "../../context/AuthContext.tsx";
 import { useProfileQuery } from "../../hooks/useProfileQuery.ts";
 import Loader from "../../components/Loader.tsx";
 import { RouterEnum } from "../../config/RouterEnum.ts";
 import {getImageUrl, SERVER_URL} from "../../config/api.config.ts";
 import {useQrCodesQuery} from "../../hooks/useQrCodesQuery.ts";
+import QRCode from "react-qr-code";
 
 const Profile = () => {
     const { isAuthenticated } = useAuth();
@@ -13,6 +14,8 @@ const Profile = () => {
     const { data: profile, isLoading, isError, error } = useProfileQuery();
 
     const { data: qrCodes, isError: qrError } = useQrCodesQuery();
+
+    console.log("qrCodes: ", qrCodes);
 
     useEffect(() => {
         if (!isAuthenticated) {
@@ -90,6 +93,15 @@ const Profile = () => {
                             Мої QR-коди
                         </h2>
 
+                        <div className={"mt-2"}>
+                            <Link to = {RouterEnum.QRCODE_CREATE}
+                                  className="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 disabled:opacity-60 text-white font-medium text-sm transition-all shadow-sm focus:ring-2 focus:ring-indigo-500/20 focus:outline-none"
+                            >
+                                {"Додати QR-код"}
+                            </Link>
+                        </div>
+
+
                         <p className="text-gray-500 mt-1">
                             Переглядайте свої QR-коди
                         </p>
@@ -115,21 +127,14 @@ const Profile = () => {
                         const qrUrl =
                             `${SERVER_URL}/api/QrCodes/view/${qr.code}`;
 
-                        const qrImage =
-                            `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrUrl)}`;
-
                         return (
                             <div
                                 key={qr.id}
                                 className="bg-white border border-gray-200 rounded-2xl shadow-sm p-5"
                             >
-
                                 <div className="flex justify-center mb-5">
-                                    <img
-                                        src={qrImage}
-                                        alt={`QR-код ${qr.name}`}
-                                        className="w-52 h-52"
-                                    />
+                                    <QRCode value={qrUrl}
+                                            className="w-52 h-52" />
                                 </div>
 
                                 <h3 className="text-lg font-bold text-gray-900">
