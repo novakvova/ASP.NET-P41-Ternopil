@@ -16,7 +16,7 @@ const Profile = () => {
     const { data: profile, isLoading, isError, error } = useProfileQuery();
 
     const [deleteModal, setDeleteModal] = useState<{
-        id: string | number;
+        id: number;
         name: string;
     } | null>(null);
 

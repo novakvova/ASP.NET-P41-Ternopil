@@ -1,7 +1,7 @@
 interface DeleteQrCodeModalProps {
     qrCodeName: string;
-    qrCodeId: string | number;
-    onDelete: (id: string | number) => void;
+    qrCodeId: number;
+    onDelete: (id: number) => void;
     onClose: () => void;
 }
 

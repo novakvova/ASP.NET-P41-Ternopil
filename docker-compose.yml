@@ -7,7 +7,7 @@ networks:
 services:
   postgresQrServerDb:
     image: postgres:18.1
-    container_name: postgres_db
+    container_name: qrpostgres_db
     restart: always
     ports:
       - "5012:5432"
@@ -28,7 +28,7 @@ services:
       - ${VOLUME_SERVERAPI}
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-      ConnectionStrings__MyWebHikeConnection: Host=postgresQrServerDb;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+      ConnectionStrings__MyQRCodeConnection: Host=postgresQrServerDb;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
       Cors__AllowedOrigins__0: ${CORS_ALLOWED_ORIGIN_0}
     ports:
       - "8054:8080"
