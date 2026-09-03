@@ -93,11 +93,16 @@ builder.Services.AddSwaggerGen(opt =>
 });
 
 const string reactCorsPolicy = "ReactClient";
+
+var reactCorsOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>() ?? Array.Empty<string>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(reactCorsPolicy, policy =>
     {
-        policy.WithOrigins("http://localhost:5173")
+        policy.WithOrigins(reactCorsOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod();
     });

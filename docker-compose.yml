@@ -1,0 +1,46 @@
+version: "3.9"
+
+networks:
+  qrCodeNet:
+    driver: bridge
+
+services:
+  postgresQrServerDb:
+    image: postgres:18.1
+    container_name: postgres_db
+    restart: always
+    ports:
+      - "5012:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ${VOLUME_POSTGRES}
+    networks:
+      - qrCodeNet
+    
+  api:
+    #build: ./WebApiTransfer
+    image: novakvova/webqr-api:latest
+    container_name: webqr-api
+    volumes:
+      - ${VOLUME_SERVERAPI}
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__MyWebHikeConnection: Host=postgresQrServerDb;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+      Cors__AllowedOrigins__0: ${CORS_ALLOWED_ORIGIN_0}
+    ports:
+      - "8054:8080"
+    depends_on:
+      - postgresQrServerDb
+    networks:
+      - qrCodeNet
+      
+  front:
+    image: novakvova/qr-react:latest
+    #build: 
+    #  context: ./my-transfer-ts
+    container_name: qr-react
+    ports:
+      - "2356:80"
