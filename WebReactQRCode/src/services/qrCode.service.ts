@@ -9,5 +9,18 @@ export const QrCodeService = {
             url: getQrCodesUrl(),
             method: "POST",
             data,
+        }),
+    
+    delete: (id: number) =>
+        instance<void>({
+            url: `${getQrCodesUrl()}/${id}`,
+            method: "DELETE",
+        }),
+
+    edit: (id: number, data: ICreateQrCode) =>
+        instance<void>({
+            url: `${getQrCodesUrl()}/${id}`,
+            method: "PUT",
+            data,
         })
 };

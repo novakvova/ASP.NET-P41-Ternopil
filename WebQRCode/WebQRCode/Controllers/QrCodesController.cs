@@ -95,4 +95,55 @@ public class QrCodesController(QRCodeDbContext qrDbContext,
 
         return Redirect(qrCode.TargetUrl);
     }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteQrCode(int id)
+    {
+        var email = User.FindFirstValue(ClaimTypes.Email)
+                    ?? User.FindFirstValue("email");
+        if (string.IsNullOrEmpty(email))
+            return Unauthorized();
+        var user = await userManager.FindByEmailAsync(email);
+        if (user == null)
+            return NotFound();
+        var qrCode = await qrDbContext.QrCodes
+            .FirstOrDefaultAsync(x => x.Id == id && x.UserId == user.Id);
+        if (qrCode == null)
+            return NotFound();
+        qrDbContext.QrCodes.Remove(qrCode);
+        await qrDbContext.SaveChangesAsync();
+        return Ok();
+    }
+
+    [HttpPut]
+    [Route("{id}")]
+    public async Task<IActionResult> EditQrCode(int id, [FromBody] CreateQrCodeRequest editedQrCode)
+    {
+        var email = User.FindFirstValue(ClaimTypes.Email) ?? User.FindFirstValue("email");
+
+        if (string.IsNullOrEmpty(email))
+            return Unauthorized();
+
+        var user = await userManager.FindByEmailAsync(email);
+
+        if (user == null)
+            return NotFound();
+
+        var qrCode = await qrDbContext.QrCodes
+            .FirstOrDefaultAsync(x =>
+                x.Id == id &&
+                x.UserId == user.Id);
+
+        if (qrCode == null)
+            return NotFound();
+
+        qrCode.Name = editedQrCode.Name;
+        qrCode.TargetUrl = editedQrCode.TargetUrl;
+
+        await qrDbContext.SaveChangesAsync();
+
+        //Ніколи не вертайте Entity
+        //Бо з Вами капут - Коли ми вертаємо Entity - може піти в цикл.
+        return Ok();
+    }
 }

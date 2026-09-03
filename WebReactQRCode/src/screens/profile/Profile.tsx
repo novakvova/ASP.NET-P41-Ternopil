@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import {useEffect, useState} from "react";
 import {Link, useNavigate} from "react-router";
 import { useAuth } from "../../context/AuthContext.tsx";
 import { useProfileQuery } from "../../hooks/useProfileQuery.ts";
@@ -7,13 +7,22 @@ import { RouterEnum } from "../../config/RouterEnum.ts";
 import {getImageUrl, SERVER_URL} from "../../config/api.config.ts";
 import {useQrCodesQuery} from "../../hooks/useQrCodesQuery.ts";
 import QRCode from "react-qr-code";
+import {useQrCodeDeleteMutation} from "../../hooks/useQrCodeDeleteMutation.ts";
+import DeleteQrCodeModal from "../../components/DeleteQrCodeModal.tsx";
 
 const Profile = () => {
     const { isAuthenticated } = useAuth();
     const navigate = useNavigate();
     const { data: profile, isLoading, isError, error } = useProfileQuery();
 
+    const [deleteModal, setDeleteModal] = useState<{
+        id: string | number;
+        name: string;
+    } | null>(null);
+
     const { data: qrCodes, isError: qrError } = useQrCodesQuery();
+
+    const { mutate: deleteQrCode } = useQrCodeDeleteMutation();
 
     console.log("qrCodes: ", qrCodes);
 
@@ -196,12 +205,42 @@ const Profile = () => {
                                     Перевірити QR
                                 </a>
 
+                                <div className="mt-4 flex justify-between gap-2">
+                                    <Link to={RouterEnum.QRCODE_EDIT.replace(":id", qr.id.toString())} className="px-7 py-2.5 hover:bg-indigo-600 hover:shadow-2xl rounded-lg bg-indigo-600 text-white font-medium text-sm text-center">
+                                        Редагувати
+                                    </Link>
+
+                                    <button
+                                        onClick={() =>
+                                            setDeleteModal({
+                                                id: qr.id,
+                                                name: qr.name,
+                                            })
+                                        }
+                                        className="cursor-pointer px-7 py-2.5 rounded-lg bg-red-800 hover:bg-red-600 hover:shadow-2xl text-white font-medium text-sm text-center"
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+
                             </div>
                         );
                     })}
 
                 </div>
             </div>
+
+            {deleteModal && (
+                <DeleteQrCodeModal
+                    qrCodeName={deleteModal.name}
+                    qrCodeId={deleteModal.id}
+                    onDelete={(id) => {
+                        deleteQrCode(id);
+                        setDeleteModal(null);
+                    }}
+                    onClose={() => setDeleteModal(null)}
+                />
+            )}
         </div>
     );
 };
